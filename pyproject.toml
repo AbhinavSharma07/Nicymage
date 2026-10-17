@@ -7,7 +7,10 @@ name = "nicymage"
 version = "0.1.0"
 description = "Local-first container image security auditor"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+]
 
 [project.scripts]
 nicymage = "nicymage.cli:main"
