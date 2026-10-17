@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nicymage</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+form { display: flex; gap: 0.5rem; }
+input { flex: 1; padding: 0.5rem; }
+button { padding: 0.5rem 1rem; }
+#result { margin-top: 1.5rem; white-space: pre-wrap; font-family: monospace; }
+.error { color: #b00020; }
+</style>
+</head>
+<body>
+<h1>Nicymage</h1>
+<form id="scan-form">
+  <input id="image" type="text" placeholder="nginx:latest" required>
+  <button type="submit">Scan</button>
+</form>
+<div id="result"></div>
+<script>
+const form = document.getElementById("scan-form");
+const result = document.getElementById("result");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const image = document.getElementById("image").value;
+  result.textContent = "Scanning...";
+  result.className = "";
+
+  try {
+    const response = await fetch("/scan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image }),
+    });
+
+    const body = await response.json();
+
+    if (!response.ok) {
+      result.textContent = "Error: " + (body.detail || response.statusText);
+      result.className = "error";
+      return;
+    }
+
+    result.textContent =
+      "Image: " + body.image + "\n" +
+      "Digest: " + body.digest + "\n" +
+      "Packages: " + body.packages + "\n" +
+      "Vulnerabilities: " + JSON.stringify(body.vulnerabilities) + "\n" +
+      "Score: " + body.score + " / 100\n" +
+      "Verdict: " + body.verdict + "\n\n" +
+      "AI Analysis:\n" + body.ai_analysis;
+  } catch (err) {
+    result.textContent = "Error: " + err.message;
+    result.className = "error";
+  }
+});
+</script>
+</body>
+</html>

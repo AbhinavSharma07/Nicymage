@@ -17,3 +17,6 @@ nicymage = "nicymage.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["nicymage*"]
+
+[tool.setuptools.package-data]
+nicymage = ["static/*"]

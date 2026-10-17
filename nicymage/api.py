@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from . import metadata, sbom, vulnscan, score, report, history, ai
@@ -7,7 +10,14 @@ from .sbom import SyftError
 from .vulnscan import TrivyError, GrypeError
 from .ai import AIError
 
+INDEX_HTML_PATH = Path(__file__).parent / "static" / "index.html"
+
 app = FastAPI(title="Nicymage API")
+
+
+@app.get("/", response_class=HTMLResponse)
+def index():
+    return INDEX_HTML_PATH.read_text(encoding="utf-8")
 
 
 class ScanRequest(BaseModel):
