@@ -1,0 +1,33 @@
+name: 'Nicymage Scan'
+description: 'Scan a container image for vulnerabilities, secrets, and risk score using Nicymage'
+inputs:
+  image:
+    description: 'Image reference to scan, e.g. nginx:latest'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Syft
+      shell: bash
+      run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Install Trivy
+      shell: bash
+      run: curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Install Grype
+      shell: bash
+      run: curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Install Nicymage
+      shell: bash
+      run: pip install "${{ github.action_path }}"
+
+    - name: Run Nicymage scan
+      shell: bash
+      run: nicymage scan "${{ inputs.image }}"

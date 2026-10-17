@@ -1,0 +1,16 @@
+name: Nicymage Scan Example
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scan-high-risk-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan a deliberately old, high-risk image
+        uses: ./
+        with:
+          image: node:6
