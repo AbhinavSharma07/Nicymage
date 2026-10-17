@@ -1,10 +1,11 @@
 import argparse
 import sys
 
-from . import metadata, sbom, vulnscan, score, report, history
+from . import metadata, sbom, vulnscan, score, report, history, ai
 from .metadata import DockerError
 from .sbom import SyftError
 from .vulnscan import TrivyError, GrypeError
+from .ai import AIError
 
 
 def build_parser():
@@ -30,6 +31,13 @@ def run_scan(image: str) -> int:
     except (NotImplementedError, DockerError, SyftError, TrivyError, GrypeError) as exc:
         print(f"nicymage: {exc}", file=sys.stderr)
         return 1
+
+    print()
+    print("AI Analysis:")
+    try:
+        print(ai.generate_analysis(vulnerabilities, risk))
+    except AIError as exc:
+        print(f"unavailable ({exc})")
 
     history.record_scan(image, image_metadata.get("digest"), risk, severity_counts)
     return 2 if risk["verdict"] == "HIGH" else 0
